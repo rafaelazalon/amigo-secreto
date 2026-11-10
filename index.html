@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amigo Secreto Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#c8102e; --red-d:#9b0c23; --green:#146b3a; --green-l:#e7f4ec;
+    --gold:#f2b632; --cream:#fff8ee; --ink:#2a1a12; --muted:#7a6a5f; --line:#ecdcc8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Fredoka',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;
+    background-image:radial-gradient(circle at 10% 10%,#ffe3e3 0,transparent 40%),radial-gradient(circle at 90% 80%,#e3f5ea 0,transparent 40%);}
+  .wrap{max-width:520px;margin:0 auto;padding:20px 16px 60px}
+  header{text-align:center;margin:8px 0 22px}
+  header .logo{font-size:54px;line-height:1}
+  header h1{font-size:30px;font-weight:700;color:var(--red);margin-top:6px}
+  header p{color:var(--muted);font-size:15px;margin-top:4px}
+  .card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 4px 0 var(--line)}
+  .card h2{font-size:19px;margin-bottom:10px}
+  .choice{display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform .1s}
+  .choice:active{transform:scale(.98)}
+  .choice .ic{font-size:40px}
+  .choice b{font-size:19px;display:block}
+  .choice span{color:var(--muted);font-size:14px}
+  label{display:block;font-size:14px;font-weight:500;margin:10px 0 5px;color:var(--muted)}
+  input,select{width:100%;font:inherit;font-size:16px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fffdf9;color:var(--ink);outline:none}
+  input:focus,select:focus{border-color:var(--gold)}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  .row .btn{flex:0 0 auto}
+  .btn{font:inherit;font-weight:600;font-size:16px;border:none;border-radius:14px;padding:13px 18px;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 4px 0 var(--red-d);transition:transform .08s, box-shadow .08s;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--red-d)}
+  .btn.full{width:100%;margin-top:14px;padding:15px}
+  .btn.green{background:var(--green);box-shadow:0 4px 0 #0c4a27}
+  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+  .btn.small{font-size:14px;padding:9px 12px;border-radius:11px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .back{background:none;border:none;font:inherit;color:var(--muted);font-size:15px;cursor:pointer;margin-bottom:10px;padding:4px 0}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .chip{background:var(--green-l);color:var(--green);border-radius:999px;padding:7px 8px 7px 14px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .chip button{background:rgba(20,107,58,.15);border:none;color:var(--green);width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1}
+  .chip.rule{background:#fdecee;color:var(--red)}
+  .chip.rule button{background:rgba(200,16,46,.15);color:var(--red)}
+  .hint{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.4}
+  .err{color:var(--red);font-size:14px;margin-top:10px;font-weight:500;min-height:1em}
+  details summary{cursor:pointer;font-weight:600;font-size:16px;list-style:none}
+  details summary::before{content:'＋ ';color:var(--gold)}
+  details[open] summary::before{content:'－ '}
+  .person{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px dashed var(--line)}
+  .person:last-child{border-bottom:none}
+  .person .nm{font-weight:600;font-size:17px;display:flex;align-items:center;gap:8px}
+  .person .acts{display:flex;gap:6px}
+  .done-tag{font-size:12px;background:var(--green-l);color:var(--green);padding:3px 8px;border-radius:999px}
+  .success{text-align:center;padding:10px 0 4px}
+  .success .big{font-size:48px}
+  .success h2{color:var(--green);font-size:22px;margin:6px 0}
+  .success p{color:var(--muted);font-size:15px;line-height:1.4}
+  /* revelação */
+  .gift{width:200px;height:200px;margin:14px auto 6px;position:relative;cursor:pointer;user-select:none}
+  .gift .box{position:absolute;bottom:0;left:20px;width:160px;height:120px;background:var(--red);border-radius:10px}
+  .gift .lid{position:absolute;top:50px;left:8px;width:184px;height:38px;background:var(--red-d);border-radius:10px;transition:transform .7s cubic-bezier(.5,-0.4,.5,1.4);transform-origin:left bottom}
+  .gift .rib-v{position:absolute;bottom:0;left:88px;width:24px;height:150px;background:var(--gold)}
+  .gift .bow{position:absolute;top:18px;left:70px;font-size:48px;transition:transform .7s}
+  .gift.open .lid{transform:translate(-30px,-60px) rotate(-35deg)}
+  .gift.open .bow{transform:translate(-50px,-80px) rotate(-40deg)}
+  .gift.shake{animation:shake .5s infinite}
+  @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+  .reveal-name{text-align:center;font-size:36px;font-weight:700;color:var(--green);margin-top:8px;opacity:0;transform:scale(.6);transition:all .5s .4s}
+  .reveal-name.show{opacity:1;transform:scale(1)}
+  .meta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .meta div{background:var(--cream);border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-size:14px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:15px;transition:transform .3s;z-index:9}
+  .toast.on{transform:translateX(-50%) translateY(0)}
+  .confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:8;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  .hidden{display:none!important}
+  .step{display:flex;gap:10px;align-items:flex-start;font-size:15px;margin:8px 0;line-height:1.35}
+  .step i{font-style:normal;background:var(--gold);color:#fff;font-weight:700;border-radius:50%;width:24px;height:24px;flex:0 0 24px;display:flex;align-items:center;justify-content:center;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🎁</div>
+    <h1>Amigo Secreto</h1>
+    <p>Sorteio online — ninguém fica sabendo quem tirou quem</p>
+  </header>
+
+  <!-- INÍCIO -->
+  <section id="v-home">
+    <div class="card choice" onclick="go('org')">
+      <div class="ic">🎅</div>
+      <div><b>Organizar sorteio</b><span>Cadastre a turma e envie para cada um</span></div>
+    </div>
+    <div class="card choice" onclick="go('rev')">
+      <div class="ic">🔍</div>
+      <div><b>Ver quem eu tirei</b><span>Recebeu um código? Toque aqui</span></div>
+    </div>
+    <div class="card">
+      <h2>Como funciona</h2>
+      <div class="step"><i>1</i><div>O organizador cadastra os nomes e toca em <b>Sortear</b>.</div></div>
+      <div class="step"><i>2</i><div>O resultado fica escondido: o app gera um <b>código secreto</b> para cada pessoa.</div></div>
+      <div class="step"><i>3</i><div>O organizador manda cada código pelo WhatsApp. Cada um abre e vê só o próprio amigo secreto.</div></div>
+    </div>
+  </section>
+
+  <!-- ORGANIZAR -->
+  <section id="v-org" class="hidden">
+    <button class="back" onclick="go('home')">← Voltar</button>
+    <div class="card">
+      <h2>📋 Detalhes</h2>
+      <label>Nome do grupo</label>
+      <input id="g-name" placeholder="Ex.: Amigos da firma 2026" maxlength="40">
+      <div class="row">
+        <div><label>Valor do presente</label><input id="g-val" placeholder="Ex.: R$ 50" maxlength="20"></div>
+        <div><label>Data da troca</label><input id="g-date" placeholder="Ex.: 24/12" maxlength="20"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>👥 Participantes <span id="count" style="color:var(--muted);font-weight:400;font-size:15px"></span></h2>
+      <div class="row">
+        <input id="p-in" placeholder="Nome do participante" maxlength="30" onkeydown="if(event.key==='Enter')addP()">
+        <button class="btn green" onclick="addP()">+</button>
+      </div>
+      <div class="chips" id="p-list"></div>
+      <p class="hint">Inclua você também, se for participar.</p>
+    </div>
+
+    <div class="card">
+      <details id="rules-box">
+        <summary>Quem não pode tirar quem (opcional)</summary>
+        <p class="hint">Útil para casais ou irmãos que não querem se tirar. Vale para os dois lados.</p>
+        <div class="row" style="margin-top:10px">
+          <select id="r-a"></select>
+          <select id="r-b"></select>
+          <button class="btn small" onclick="addRule()">OK</button>
+        </div>
+        <div class="chips" id="r-list"></div>
+      </details>
+    </div>
+
+    <div class="err" id="org-err"></div>
+    <button class="btn full" onclick="draw()">🎲 Sortear agora</button>
+  </section>
+
+  <!-- RESULTADO DO ORGANIZADOR -->
+  <section id="v-sent" class="hidden">
+    <button class="back" onclick="go('home')">← Início</button>
+    <div class="card">
+      <div class="success">
+        <div class="big">🤫</div>
+        <h2>Sorteio feito!</h2>
+        <p>Nem você viu o resultado. Agora envie o código de cada pessoa para ela — e <b>não abra os códigos dos outros</b>.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h2>📨 Enviar para cada um</h2>
+      <div id="send-list"></div>
+      <p class="hint">“WhatsApp” abre o app para você escolher o contato. “Copiar” copia a mensagem para colar onde quiser.</p>
+    </div>
+    <button class="btn ghost full" onclick="redo()">↺ Refazer o sorteio</button>
+    <p class="hint" style="text-align:center">Se refizer, os códigos antigos param de valer para este sorteio — mande os novos.</p>
+  </section>
+
+  <!-- REVELAR -->
+  <section id="v-rev" class="hidden">
+    <button class="back" onclick="go('home')">← Voltar</button>
+    <div class="card" id="rev-form">
+      <h2>🔐 Seu código secreto</h2>
+      <p class="hint" style="margin-top:0">Cole aqui o código que o organizador mandou para você.</p>
+      <input id="code-in" placeholder="Cole o código aqui" style="margin-top:10px;font-family:monospace;letter-spacing:1px" autocomplete="off" autocapitalize="characters">
+      <div class="err" id="rev-err"></div>
+      <button class="btn full green" onclick="openCode()">Ver meu amigo secreto</button>
+    </div>
+    <div class="card hidden" id="rev-show" style="text-align:center">
+      <p style="font-size:18px">Oi, <b id="rv-giver"></b>! 👋</p>
+      <p class="hint" style="margin-top:4px">Toque no presente para descobrir quem você tirou</p>
+      <div class="gift" id="gift" onclick="openGift()">
+        <div class="box"></div><div class="rib-v"></div><div class="lid"></div><div class="bow">🎀</div>
+      </div>
+      <p id="rv-label" class="hint hidden" style="font-size:15px">Você tirou:</p>
+      <div class="reveal-name" id="rv-name"></div>
+      <div class="meta" id="rv-meta"></div>
+      <p class="hint hidden" id="rv-secret" style="margin-top:16px">🤐 Guarde segredo! Feche esta tela antes de mostrar o celular para alguém.</p>
+      <button class="btn ghost full" onclick="closeReveal()">Fechar</button>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Configuração: link deste app (preenchido na publicação) ===== */
+const APP_URL = (function(){
+  const ART = "https://claude.ai/artifact/Cm5MNSRgwKoH1f3ubvmL1S";
+  try{ if(/^https?:$/.test(location.protocol) && !/claude|anthropic|usercontent/.test(location.hostname)) return location.origin+location.pathname; }catch(e){}
+  return ART;
+})();
+
+/* ===== Estado ===== */
+let people = [];
+let rules = [];   // [[a,b],...]
+let sent = [];    // [{giver, code, done}]
+
+function store(k,v){try{localStorage.setItem('as_'+k,JSON.stringify(v))}catch(e){}}
+function load(k,d){try{const v=localStorage.getItem('as_'+k);return v?JSON.parse(v):d}catch(e){return d}}
+
+function go(v){
+  ['home','org','sent','rev'].forEach(x=>document.getElementById('v-'+x).classList.toggle('hidden',x!==v));
+  window.scrollTo(0,0);
+}
+
+/* ===== Participantes ===== */
+function addP(){
+  const inp=document.getElementById('p-in');
+  const n=inp.value.trim().replace(/\s+/g,' ');
+  const err=document.getElementById('org-err');
+  err.textContent='';
+  if(!n) return;
+  if(people.some(p=>p.toLowerCase()===n.toLowerCase())){err.textContent='Esse nome já está na lista.';return;}
+  if(people.length>=60){err.textContent='Máximo de 60 participantes.';return;}
+  people.push(n); inp.value=''; inp.focus(); renderOrg();
+}
+function delP(i){
+  const n=people[i]; people.splice(i,1);
+  rules=rules.filter(r=>r[0]!==n&&r[1]!==n); renderOrg();
+}
+function addRule(){
+  const a=document.getElementById('r-a').value, b=document.getElementById('r-b').value;
+  if(!a||!b||a===b) return;
+  if(rules.some(r=>(r[0]===a&&r[1]===b)||(r[0]===b&&r[1]===a))) return;
+  rules.push([a,b]); renderOrg();
+}
+function delRule(i){rules.splice(i,1);renderOrg();}
+
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+
+function renderOrg(){
+  const pl=document.getElementById('p-list'); pl.innerHTML='';
+  people.forEach((p,i)=>{const c=el('div','chip');c.append(el('span',null,p));const b=el('button',null,'✕');b.onclick=()=>delP(i);c.append(b);pl.append(c);});
+  document.getElementById('count').textContent=people.length?`(${people.length})`:'';
+  ['r-a','r-b'].forEach(id=>{const s=document.getElementById(id);const cur=s.value;s.innerHTML='';
+    const o0=el('option',null,'Escolha…');o0.value='';s.append(o0);
+    people.forEach(p=>{const o=el('option',null,p);o.value=p;s.append(o);});s.value=people.includes(cur)?cur:'';});
+  const rl=document.getElementById('r-list'); rl.innerHTML='';
+  rules.forEach((r,i)=>{const c=el('div','chip rule');c.append(el('span',null,`${r[0]} ⇄ ${r[1]}`));const b=el('button',null,'✕');b.onclick=()=>delRule(i);c.append(b);rl.append(c);});
+  store('draft',{people,rules,name:val('g-name'),v:val('g-val'),d:val('g-date')});
+}
+function val(id){return document.getElementById(id).value.trim();}
+
+/* ===== Sorteio ===== */
+function randInt(n){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n;}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=randInt(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function blocked(a,b){return a===b||rules.some(r=>(r[0]===a&&r[1]===b)||(r[0]===b&&r[1]===a));}
+
+function makeDraw(){
+  for(let t=0;t<5000;t++){
+    const rec=shuffle(people.slice());
+    if(people.every((g,i)=>!blocked(g,rec[i]))) return people.map((g,i)=>[g,rec[i]]);
+  }
+  return null;
+}
+
+function draw(){
+  const err=document.getElementById('org-err'); err.textContent='';
+  if(people.length<3){err.textContent='Coloque pelo menos 3 participantes.';return;}
+  const pairs=makeDraw();
+  if(!pairs){err.textContent='Não deu para sortear com essas restrições. Remova alguma regra.';return;}
+  const g=val('g-name'),v=val('g-val'),d=val('g-date');
+  sent=pairs.map(([giver,rec])=>({giver,code:encodeCode([giver,rec,g,v,d].join('\u0001')),done:false}));
+  store('sent',{sent,g,v,d});
+  renderSent(); go('sent'); confetti();
+}
+function redo(){
+  const box=document.getElementById('send-list');
+  if(!box.dataset.confirm){box.dataset.confirm='1';toast('Toque de novo para confirmar');setTimeout(()=>delete box.dataset.confirm,3000);return;}
+  delete box.dataset.confirm; draw();
+}
+
+/* ===== Mensagens ===== */
+function msgFor(item){
+  const s=load('sent',{});
+  const link=APP_URL.startsWith('http')?`${APP_URL}#${item.code}`:'';
+  let m=`🎁 *Amigo Secreto${s.g?' — '+s.g:''}*\n\nOi, ${item.giver}! O sorteio foi feito e só você vai saber quem tirou.\n\n`;
+  if(link) m+=`👉 Abra este link:\n${link}\n\nSe não abrir direto, entre no app, toque em *Ver quem eu tirei* e cole o código:\n`;
+  else m+=`Entre no app, toque em *Ver quem eu tirei* e cole o código:\n`;
+  m+=`${item.code}\n`;
+  if(s.v) m+=`\n💰 Valor: ${s.v}`;
+  if(s.d) m+=`\n📅 Troca: ${s.d}`;
+  return m;
+}
+function renderSent(){
+  const box=document.getElementById('send-list'); box.innerHTML='';
+  sent.forEach((it,i)=>{
+    const row=el('div','person');
+    const nm=el('div','nm',it.giver); if(it.done) nm.append(el('span','done-tag','enviado ✓'));
+    const acts=el('div','acts');
+    const wa=el('a','btn green small','WhatsApp');
+    wa.href='https://wa.me/?text='+encodeURIComponent(msgFor(it)); wa.target='_blank'; wa.rel='noopener';
+    wa.onclick=()=>mark(i);
+    const cp=el('button','btn ghost small','Copiar');
+    cp.onclick=async()=>{try{await navigator.clipboard.writeText(msgFor(it));toast('Mensagem copiada!');mark(i);}catch(e){toast('Não consegui copiar 😕');}};
+    acts.append(wa,cp); row.append(nm,acts); box.append(row);
+  });
+}
+function mark(i){sent[i].done=true;const s=load('sent',{});s.sent=sent;store('sent',s);setTimeout(renderSent,300);}
+
+/* ===== Código secreto (embaralhado, sem ler a olho) ===== */
+const ALPH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function keystream(seed,n){let x=(seed*2654435761+0x9E3779B9)>>>0||1;const out=[];for(let i=0;i<n;i++){x^=x<<13;x>>>=0;x^=x>>>17;x^=x<<5;x>>>=0;out.push(x&255);}return out;}
+function b32enc(bytes){let bits=0,v=0,s='';for(const b of bytes){v=(v<<8)|b;bits+=8;while(bits>=5){s+=ALPH[(v>>>(bits-5))&31];bits-=5;}}if(bits>0)s+=ALPH[(v<<(5-bits))&31];return s;}
+function b32dec(str){let bits=0,v=0;const out=[];for(const ch of str){const i=ALPH.indexOf(ch);if(i<0)return null;v=(v<<5)|i;bits+=5;if(bits>=8){out.push((v>>>(bits-8))&255);bits-=8;}}return out;}
+function encodeCode(text){
+  const data=Array.from(new TextEncoder().encode(text));
+  const n=new Uint8Array(2);crypto.getRandomValues(n);
+  const seed=(n[0]<<8)|n[1];
+  const chk=data.reduce((a,b)=>(a*31+b)&255,7);
+  const ks=keystream(seed,data.length+1);
+  const body=data.concat([chk]).map((b,i)=>b^ks[i]);
+  return b32enc([n[0],n[1]].concat(body));
+}
+function decodeCode(code){
+  const clean=code.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const bytes=b32dec(clean);
+  if(!bytes||bytes.length<4) return null;
+  const seed=(bytes[0]<<8)|bytes[1];
+  const body=bytes.slice(2);
+  const ks=keystream(seed,body.length);
+  const plain=body.map((b,i)=>b^ks[i]);
+  const chk=plain.pop();
+  if(plain.reduce((a,b)=>(a*31+b)&255,7)!==chk) return null;
+  try{const parts=new TextDecoder('utf-8',{fatal:true}).decode(new Uint8Array(plain)).split('\u0001');return parts.length===5?parts:null;}catch(e){return null;}
+}
+
+/* ===== Revelar ===== */
+let current=null;
+function openCode(code){
+  const raw=(code||document.getElementById('code-in').value).trim();
+  const err=document.getElementById('rev-err'); err.textContent='';
+  // aceita a mensagem inteira colada: pega o maior bloco de letras/números
+  const cands=(raw.toUpperCase().match(/[A-Z0-9]{8,}/g)||[]).sort((a,b)=>b.length-a.length);
+  let res=null; for(const c of cands){res=decodeCode(c);if(res)break;}
+  if(!res){err.textContent='Código inválido. Confira se colou ele inteiro.';return;}
+  current=res;
+  const [giver,rec,g,v,d]=res;
+  document.getElementById('rv-giver').textContent=giver;
+  document.getElementById('rv-name').textContent=rec;
+  const meta=document.getElementById('rv-meta'); meta.innerHTML='';
+  if(g) meta.append(el('div',null,'👥 '+g));
+  if(v) meta.append(el('div',null,'💰 '+v));
+  if(d) meta.append(el('div',null,'📅 '+d));
+  meta.classList.add('hidden');
+  const gift=document.getElementById('gift'); gift.className='gift shake';
+  document.getElementById('rv-name').classList.remove('show');
+  ['rv-label','rv-secret'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('rev-form').classList.add('hidden');
+  document.getElementById('rev-show').classList.remove('hidden');
+  go('rev');
+}
+function openGift(){
+  const gift=document.getElementById('gift'); if(gift.classList.contains('open')) return;
+  gift.className='gift open';
+  document.getElementById('rv-label').classList.remove('hidden');
+  document.getElementById('rv-name').classList.add('show');
+  document.getElementById('rv-meta').classList.remove('hidden');
+  document.getElementById('rv-secret').classList.remove('hidden');
+  setTimeout(confetti,500);
+}
+function closeReveal(){
+  current=null; document.getElementById('code-in').value='';
+  document.getElementById('rev-show').classList.add('hidden');
+  document.getElementById('rev-form').classList.remove('hidden');
+  try{if(location.hash)history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+  go('home');
+}
+
+/* ===== Extras ===== */
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200);}
+function confetti(){const cs=['#c8102e','#146b3a','#f2b632','#fff','#e85d75'];for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.background=cs[i%cs.length];c.style.animationDuration=(2+Math.random()*2)+'s';c.style.animationDelay=Math.random()*.5+'s';c.style.borderRadius=Math.random()>.5?'50%':'2px';document.body.append(c);setTimeout(()=>c.remove(),5000);}}
+
+/* ===== Início ===== */
+(function init(){
+  const dr=load('draft',null);
+  if(dr){people=dr.people||[];rules=dr.rules||[];document.getElementById('g-name').value=dr.name||'';document.getElementById('g-val').value=dr.v||'';document.getElementById('g-date').value=dr.d||'';}
+  ['g-name','g-val','g-date'].forEach(id=>document.getElementById(id).addEventListener('input',renderOrg));
+  renderOrg();
+  const s=load('sent',null);
+  if(s&&s.sent&&s.sent.length){sent=s.sent;renderSent();
+    const home=document.getElementById('v-home');
+    const c=el('div','card choice');c.innerHTML='<div class="ic">📨</div><div><b>Continuar enviando</b><span>Seu último sorteio está salvo neste aparelho</span></div>';
+    c.onclick=()=>go('sent'); home.insertBefore(c,home.children[1]);}
+  const h=(location.hash||'').slice(1);
+  if(h&&/^[A-Za-z0-9]{8,}$/.test(h)) openCode(h);
+})();
+</script>
+</body>
+</html>
